@@ -16,6 +16,6 @@ public class Server extends JFrame{
     private Socket connection;
 
     public Server(){
-        System.out.println("hi");
+        System.out.println("bye");
     }
 }
