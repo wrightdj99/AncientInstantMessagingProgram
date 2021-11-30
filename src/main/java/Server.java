@@ -14,4 +14,8 @@ public class Server extends JFrame{
     //Server side socket where we can receive messages from the client
     private ServerSocket server;
     private Socket connection;
+
+    public Server(){
+        System.out.println("hi");
+    }
 }
