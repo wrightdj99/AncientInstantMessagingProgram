@@ -1,25 +1,38 @@
 package main;
 
-import ui.UIServer;
-
 import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.AncestorListener;
 
 public class Server extends JFrame{
-    //Networking in and out streams
+    private JTextField userText;
+    private JTextArea chatWindow;
     private ObjectOutputStream output;
     private ObjectInputStream input;
-    //main.Server side socket where we can receive messages from the client
     private ServerSocket server;
     private Socket connection;
-    UIServer uiServer = new UIServer();
-    public boolean isStarted;
 
     public Server(){
-
+        super("Instant Messaging Server");
+        userText = new JTextField();
+        userText.setEditable(false);
+        userText.addActionListener(
+                new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        sendMessage(e.getActionCommand());
+                        userText.setText("");
+                    }
+                }
+        );
+        add(userText, BorderLayout.NORTH);
+        chatWindow = new JTextArea();
+        add(new JScrollPane(chatWindow));
+        setSize(600, 600);
+        setVisible(true);
     }
     public void startRunning(){
         try{
@@ -29,25 +42,21 @@ public class Server extends JFrame{
                     waitForConnection();
                     setStreams();
                     whileChatting();
-                    isStarted = true;
                 }
                 catch(EOFException eofException){
                     showMessage("\n Server ended connection");
-                    isStarted = false;
                 }
                 finally{
                     closeAll();
-                    isStarted = false;
                 }
             }
         }
         catch(IOException ioException){
             ioException.printStackTrace();
-            isStarted = false;
         }
     }
     //Communicate with end user about connection status
-    private void waitForConnection() throws IOException{
+    public void waitForConnection() throws IOException{
         showMessage("Waiting for someone to connect...\n");
         connection = server.accept();
         showMessage("Now connected to " + connection.getInetAddress().getHostName());
@@ -73,7 +82,7 @@ public class Server extends JFrame{
                 showMessage("\nUndecipherable message\n");
             }
         }
-        while(!message.equals("END CHAT SESSION"));
+        while(!message.equals("SERVER - END"));
     }
 
     private void closeAll(){
@@ -91,12 +100,12 @@ public class Server extends JFrame{
 
     private void sendMessage(String message){
         try{
-            output.writeObject("SERVER - " + message);
+            output.writeObject("\nSERVER - " + message);
             output.flush();
             showMessage("\nSERVER - " + message);
         }
         catch(IOException ioException){
-            uiServer.chatWindow.append("\n ERROR: UNABLE TO SEND MESSAGE");
+            chatWindow.append("\n ERROR: UNABLE TO SEND MESSAGE");
         }
     }
 
@@ -106,7 +115,7 @@ public class Server extends JFrame{
                 new Runnable() {
                     @Override
                     public void run() {
-                        uiServer.chatWindow.append(text);
+                        chatWindow.append(text);
                     }
                 }
         );
@@ -117,7 +126,7 @@ public class Server extends JFrame{
                 new Runnable() {
                     @Override
                     public void run() {
-                        uiServer.userText.setEditable(tof);
+                        userText.setEditable(tof);
                     }
                 }
         );
