@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AncientInstantMessagingProgram:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AncientInstantMessagingProgram_jar</output-path>
+    <root id="archive" name="AncientInstantMessagingProgram.jar">
+      <element id="module-output" name="AncientInstantMessagingProgram" />
+    </root>
+  </artifact>
+</component>
